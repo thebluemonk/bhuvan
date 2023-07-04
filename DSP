@@ -1,0 +1,18 @@
+% unit step function and its delay %version.
+clear all; 
+n= -10:20; 
+u=[zeros(1,10),ones(1,21)];
+stem(n,u);
+axis([-10 20 0 1.2])
+title('Unit step sequence');
+xlabel('time index n ---->');
+ylabel('Amplitude ----->');
+%unit delayed step function
+n= -10:20; 
+m=input('\n Enter the delay=');
+ud=[zeros(1,10+m),ones(1,21-m)];
+stem(n,ud)
+axis([-10 20 0 1.2])
+title('Unit delayed step sequence');
+xlabel('time index n------>');
+ylabel('Amplitude------->');
