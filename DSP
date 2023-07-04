@@ -16,3 +16,55 @@ axis([-10 20 0 1.2])
 title('Unit delayed step sequence');
 xlabel('time index n------>');
 ylabel('Amplitude------->');
+
+2.
+% unit sample sequence 
+clc; 
+close all; 
+clc
+clear all; 
+n=-10:20; 
+u=[zeros(1,10),1,zeros(1,20)];
+stem(n,u);
+title('Unit sample sequence');
+xlabel('time index n');
+ylabel('Amplitude');
+axis([-10 20 0 1.2])
+%unit delayed function
+m=input('\n Enter the delay=');
+ud=[zeros(1,10+m),1,zeros(1,20-m)];
+stem(n,ud);
+axis([-20 20 0 2])
+title('Unit delayed sample by m');
+xlabel('time index n------>');
+ylabel('Amplitude------>');
+
+Input:
+Enter the delay=5
+
+3.clc; 
+close all; 
+clear all; 
+n= 0:10; 
+u= [(n)<=10];
+x=n.*u;
+stem(n,x);
+title('Plot of x(n)=n*u(n)');
+axis([0 10.5 0 10.5])
+xlabel('time----->');
+ylabel('Amplitude---->');
+	
+4.
+clc; 
+close all; 
+clear all; 
+n=100; 
+h=1/n;
+t=0:h:1;
+a=exp(-2*t);
+plot(t,a);
+title('Graph of y=exp(-2*t)');  %raising exp(2*t)
+xlabel('x-axis');
+ylabel('y-axis');
+
+
