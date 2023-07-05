@@ -1,70 +1,243 @@
-% unit step function and its delay %version.
-clear all; 
-n= -10:20; 
-u=[zeros(1,10),ones(1,21)];
-stem(n,u);
-axis([-10 20 0 1.2])
-title('Unit step sequence');
-xlabel('time index n ---->');
-ylabel('Amplitude ----->');
-%unit delayed step function
-n= -10:20; 
-m=input('\n Enter the delay=');
-ud=[zeros(1,10+m),ones(1,21-m)];
-stem(n,ud)
-axis([-10 20 0 1.2])
-title('Unit delayed step sequence');
-xlabel('time index n------>');
-ylabel('Amplitude------->');
+clc;
+close all
+clear all
+x=input('enter the 1st value');
+h=input('enter the 2nd value');
+N1=length(x);
+N2=length(h);
+N=max(N1,N2);
+for n=0:1:N-1
+y(n+1)=0;
+for M=0:1:N-1
+i=n-M;
+if(i<0)
+i=i+N;
+end
+y(n+1)=y(n+1)+x(M+1)*h(i+1);
+end
+end
+disp(y)
+n=0:1:N-1;
+stem(n,y)
+title('circular convolution plot');
+xlabel('time');
+ylabel('amplitude');
 
 2.
-% unit sample sequence 
-clc; 
-close all; 
-clc
-clear all; 
-n=-10:20; 
-u=[zeros(1,10),1,zeros(1,20)];
-stem(n,u);
-title('Unit sample sequence');
-xlabel('time index n');
-ylabel('Amplitude');
-axis([-10 20 0 1.2])
-%unit delayed function
-m=input('\n Enter the delay=');
-ud=[zeros(1,10+m),1,zeros(1,20-m)];
-stem(n,ud);
-axis([-20 20 0 2])
-title('Unit delayed sample by m');
-xlabel('time index n------>');
-ylabel('Amplitude------>');
-
-Input:
-Enter the delay=5
-
-3.clc; 
-close all; 
-clear all; 
-n= 0:10; 
-u= [(n)<=10];
-x=n.*u;
+clc;
+clear all;
+close all;
+x=input('enter the 1st sequence');
+h=input('enter the 2nd sequence');
+y=h*x;
+disp('the circular conv o/p is');
+disp(y);
+subplot(3,1,1)
+n=0:1:length(x)-1;
 stem(n,x);
-title('Plot of x(n)=n*u(n)');
-axis([0 10.5 0 10.5])
-xlabel('time----->');
-ylabel('Amplitude---->');
-	
-4.
-clc; 
-close all; 
-clear all; 
-n=100; 
-h=1/n;
-t=0:h:1;
-a=exp(-2*t);
-plot(t,a);
-title('Graph of y=exp(-2*t)');  %raising exp(2*t)
-xlabel('x-axis');
-ylabel('y-axis');
+title('input of x');
+xlabel('time');
+ylabel('amplitude');
+subplot(3,1,2)
+n1=0:1:length(h)-1;
+stem(n1,h);
+title('input of h');
+xlabel('time');
+ylabel('amplitude');
+subplot(3,1,3)
+n2=0:1:length(y)-1;
+stem(n2,y);
+title('output of y');
+xlabel('time');
+ylabel('amplitude');
 
+3.
+clc;
+clear all;
+close all;
+x=input('enter the 1st sequence');
+h=input('enter the 2nd sequence');
+a=h'
+A=circshift(a,1);
+B=circshift(a,2);
+C=[a A B]
+y=C*x';
+disp('the circular conv o/p is');
+disp(y);
+subplot(3,1,1)
+n=0:1:length(x)-1;
+stem(n,x);
+title('input of x');
+xlabel('time');
+ylabel('amplitude');
+subplot(3,1,2)
+n1=0:1:length(h)-1;
+stem(n1,h);
+title('input of h');
+xlabel('time');
+ylabel('amplitude');
+subplot(3,1,3)
+n2=0:1:length(y)-1;
+stem(n2,y);
+title('input of y');
+xlabel('time');
+ylabel('amplitude');
+
+4.
+clc;
+clear all;
+close all;
+x=input('enter the 1st value');
+h=input('enter the 2nd value');
+N=length(x)+length(h)-1;
+X=[x,zeros(1,N-length(x))];
+H=[h,zeros(1,N-length(h))];
+for n=0:N-1
+    Y(n+1)=0;
+    for M=0:N-1
+        i=n-M;
+        if(i<0)
+            i=i+N;
+        end
+        Y(n+1)=Y(n+1)+X(M+1)*H(i+1);
+    end
+end
+disp(Y)
+stem(Y)
+title('the output values');
+xlabel('time');	
+ylabel('amplitude');
+
+lpf
+clc; close all; 	
+clear all;
+wc=input('enter the cut off freq');
+N=input('enter order of the filter');
+a=(N-1)/2;
+n=0:1:N-1;
+hd=sin(wc1*(n-a+.001))./(pi*(n-a+.001))
+wn=hamming(N);
+hn=hd.*wn' 
+freqz(hn,1);
+
+hpf
+clc; close all; clear all;
+wc=input('enter the cut off freq'); 
+N=input('enter order of the filter'); 
+a=(N-1)/2;
+n=0:1:N-1;
+hd=(sin(pi*(n-a+.001))-sin(wc*(n-a+.001)))./(pi*(n-a+.001))
+wn=hamming(N);
+hn=hd.*wn' 
+freqz(hn,1);
+
+bandpass
+clc; close all; clear all;
+wc1=input('enter the lower cut off freq'); 
+wc2=input('enter the upper cut off freq');
+N=input('enter order of the filter');
+a=(N-1)/2;
+n=0:1:N-1;
+hd=(sin(wc2*(n-a+.001))-sin(wc1*(n-a+.001)))./(pi*(n-a+.001)) 
+wn=hamming(N);
+hn=hd.*wn' 
+freqz(hn,1);
+
+bandstop
+clc; close all; clear all;
+wc1=input('enter the lower cut off freq'); 
+wc2=input('enter the upper cut off freq'); 
+N=input('enter order of the filter');
+a=(N-1)/2;
+n=0:1:N-1;
+hd=(sin(wc1*(n-a+.001))-sin(wc2*(n-a+.001))+sin(pi*(n-a+.001)))./(pi*(n-a+.001))
+wn=hamming(N);
+hn=hd.*wn' 
+freqz(hn,1);
+
+linear convo
+#include<stdio.h>
+#define LENGHT1 6 /*Lenght of i/p samples sequence*/
+#define LENGHT2 4 /*Lenght of impulse response Co-efficients */
+int x[9]={1,2,3,4,5,6,0,0,0}; /*Input Signal Samples*/
+int h[9]={1,2,3,4,0,0,0,0,0}; /*Impulse Response Coefficients*/
+int y[LENGHT1+LENGHT2-1];
+main()
+{
+int i=0,j;
+for(i=0;i<(LENGHT1+LENGHT2-1);i++)
+{
+y[i]=0;
+for(j=0;j<=i;j++)
+y[i]+=x[j]*h[i-j];
+}
+for(i=0;i<(LENGHT1+LENGHT2-1);i++)
+printf("%d\n",y[i]);
+}
+
+cricular convo
+/* program to implement circular convolution */
+
+#include<stdio.h>
+
+int m,n,x[30],h[30],y[30],i,j, k,x2[30],a[30];
+
+void main()
+{
+            printf(" enter the length of the first sequence\n");
+            scanf("%d",&m);
+            printf(" enter the length of the second sequence\n");
+            scanf("%d",&n);
+
+            printf(" enter the first sequence\n");
+            for(i=0;i<m;i++)
+                        scanf("%d",&x[i]);
+
+            printf(" enter the second sequence\n");
+            for(j=0;j<n;j++)
+                        scanf("%d",&h[j]);
+
+            if(m-n!=0)        /*If length of both sequences are not equal*/
+            {
+                        if(m>n)                        /* Pad the smaller sequence with zero*/
+                        {
+                        for(i=n;i<m;i++)
+                                    h[i]=0;
+                                    n=m;
+                        }
+                        for(i=m;i<n;i++)
+                                    x[i]=0;
+                                    m=n;
+            }
+
+            y[0]=0;
+            a[0]=h[0];
+
+            for(j=1;j<n;j++)            /*folding h(n) to h(-n)*/
+                        a[j]=h[n-j];
+
+            /*Circular convolution*/
+            for(i=0;i<n;i++)
+                        y[0]+=x[i]*a[i];
+
+            for(k=1;k<n;k++)
+            {
+                        y[k]=0;
+                        /*circular shift*/
+
+                        for(j=1;j<n;j++)
+                                    x2[j]=a[j-1];
+                                    x2[0]=a[n-1];
+                        for(i=0;i<n;i++)
+                        {
+                                    a[i]=x2[i];
+                                    y[k]+=x[i]*x2[i];
+                        }
+            }
+
+            /*displaying the result*/
+            printf(" the circular convolution is\n");
+            for(i=0;i<n;i++)
+                        printf("%d \t",y[i]);
+}
 
