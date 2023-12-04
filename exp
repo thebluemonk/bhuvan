@@ -1,0 +1,391 @@
+EXP-1
+clc;
+close all;
+clear all;
+a=[1 2 2-6j
+   1 3 1-3j
+   2 3 0.6-2j
+   2 4 1-3j
+   3 4 2-6j]
+sb=a(:,1)
+eb=a(:,2)
+y=a(:,3)
+sb1=max(sb)
+eb1=max(eb)
+bus=max(sb1,eb1)
+line=size(a,1)
+ybus=zeros(bus,bus)
+for i=1:line
+    p=sb(i)
+    q=eb(i)
+    ybus(p,p)=ybus(p,p)+y(i)
+    ybus(q,q)=ybus(q,q)+y(i)
+    ybus(p,q)=-y(i)
+    ybus(q,p)=-y(i)
+end
+disp(ybus)
+
+EXP-2
+clc;
+close all;
+clear all;
+p=[1 2 0.452j
+   1 3 0.387j
+   2 3 0.619j]
+sb=p(:,1)
+eb=p(:,2)
+z=p(:,3)
+y=1./z
+sb1=max(sb)
+eb1=max(eb)
+bus=max(sb1,eb1)
+line=size(p,1)
+ypri=zeros(line,line)
+ybus=zeros(bus)
+a=zeros(line,bus)
+
+for i=1:line
+   a(i,sb(i))=1
+   a(i,eb(i))=-1
+end
+
+a=a(:,2:3)
+
+for i=1:line
+   ypri(i,i)=y(i)
+end
+
+at=transpose(a)
+
+ybus=at*ypri*a
+
+EXP-3
+clc;
+close all;
+clear all;
+p=[1 2 0.452j
+   1 3 0.387j
+   2 3 0.619j]
+z=[1 2 0.2j
+   1 3 0.1j]
+f1=z(:,1)
+s1=z(:,2)
+mz2=z(:,3)
+sb=p(:,1)
+eb=p(:,2)
+Z=p(:,3)
+
+sb1=max(sb)
+eb1=max(eb)
+bus=max(sb1,eb1)
+line=size(p,1)
+ypri=zeros(line,line)
+ybus=zeros(bus)
+a=zeros(line,bus)
+
+for i=1:line
+   a(i,sb(i))=1
+   a(i,eb(i))=-1
+   zpri(i,i)=Z(i)
+   
+end
+nmc=2
+for i=1:nmc
+     zpri(f1(i),s1(i))=mz2(i)
+     zpri(s1(i),f1(i))=mz2(i)
+end
+ypri=inv(zpri)
+at=transpose(a)
+ybus=at*ypri*a
+ybus=ybus(2:3,2:3)
+
+EXP-4
+
+clc;
+clear all;
+vbus=[1.05+0j
+      0.98-0.06j
+      1-0.05j]
+ybus=[20-50j -10+20j -10+30j
+     -10+20j 16-52j -16+32j
+     -10+30j -16+32j 26-62j]
+n=length(ybus)
+Sp=zeros(n,n)
+for i=1:n
+  for k=1:n
+    if i==k
+        continue
+    else
+I(i,k)=-ybus(i,k)*(vbus(i)-vbus(k));
+I(k,i)=-I(i,k)
+S(i,k)=vbus(i)*conj(I(i,k))
+S(k,i)=vbus(k)*conj(I(k,i))
+Sl(i,k)=S(i,k)+S(k,i)
+Sp(i,i)=Sp(i,i)+S(i,k)
+    end
+  end
+end
+Sbus=[Sp(1,1);Sp(2,2);Sp(3,3)]
+Ibus=conj((Sbus./vbus))
+
+
+EXP-5
+clc
+clear 
+Z=[1 1 0 0.25
+    2 2 1 0.1
+    2 2 1 0.1
+    3 3 1 0.1
+    4 2 0 0.25
+    5 2 3 0.1]
+[m,n]=size(Z)
+zbus=[]
+x=0
+for i=1:m
+    j=i
+    [r,c]=size(zbus)
+    from=Z(i,2)
+    to=Z(i,3)
+    value=Z(i,4)
+    N=max(from,to)
+    ref=min(from,to)
+    if N>x & ref==0
+        zbus=[zbus zeros(r,1);zeros(1,c) value]
+        x=N
+        continue
+    end
+    if N>x & ref~=0
+        zbus=[zbus zbus(:,ref);
+            zbus(ref,:) value+zbus(ref,ref)]
+        x=N
+        continue
+    end
+     if N<=x & ref==0
+        zbus=zbus-1/(zbus(N,N)+value)*zbus(:,N)*zbus(N,:)
+        
+        continue
+    end
+    
+ if N<=x & ref~=0
+        zbus=zbus-1/(value+zbus(from,from)+zbus(to,to)- ...
+          2*zbus(from,to))*((zbus(:,from)- ...
+          zbus(:,to))*((zbus(from,:)-zbus(to,:))))
+        continue
+ end
+end
+
+EXP-6
+clc
+clear
+z=0.1062+0.1108i;
+y=0;
+vs=33000;
+vsph=vs/sqrt(3);
+is=65.0944-48.8208i;
+len=input('enter the length in KM');
+if  len<=80
+    x=1;
+elseif len<=240
+    x=2;
+else 
+    x=3;
+end
+Z=z*len;
+Y=y*len;
+switch x
+    case 1
+        A=1;
+        B=Z;
+        C=0;
+        D=A;
+    case 2
+        p=input('enter 1 for PI and 2 for T');
+        A=1+(Y*Z)/2;
+        D=A;
+        if p==1
+            B=Z;
+            C=Y*(1+(Z*Y)/4);
+        else
+            C=Y;
+            B=Z*(1+(Z*Y)/4);
+        end
+    case 3
+        A=cosh(sqrt(Y*Z));
+        B=sqrt(Z/Y)*sinh(sqrt(Y*Z));
+        C=sqrt(Y/Z)*sinh(sqrt(Y*Z));
+        D=A;
+end
+ABCD=A*D-B*C;
+vr=D*vsph-B*is;
+ir=-C*vsph+A*is;
+spower=3*vsph*conj(is);
+rpower=3*vr*conj(ir);
+eff=real(rpower)/real(spower)*100;
+reg=(abs(vsph)/abs(A)-abs(vr))/abs(vr)*100;
+fprintf('ABCD constants of transmission line are\n');
+fprintf('A=%f+j%f\n',real(A),imag(A));
+fprintf('B=%f+j%f\n',real(B),imag(B));
+fprintf('C=%f+j%f\n',real(C),imag(C));
+fprintf('D=%f+j%f\n',real(D),imag(D));
+fprintf('sending end vs=%0.1f+j%0.1f\n',real(vs),imag(vs));
+fprintf('sending end vs(polar)=%0.2f,%0.2f\n',abs(vs),(angle(vs)*180/pi));
+fprintf('sending end current =%f+j%f\n',real(is),imag(is));
+fprintf('efficiency=%0.2fn\n',eff);
+fprintf('reg=%0.2f\n',reg);
+fprintf('ab-bc=%0.2f\n',ABCD);
+
+
+
+
+EXP-7
+clc
+clear 
+n=3 
+v=[1 1 1] 
+ybus=[70-90j -20+40j -50+50j ; -20+40j 43.08-55.39j 0+0j; -50+50j 0+0j 75-75j] 
+y=abs(ybus) 
+yn=angle(ybus) 
+v=abs(v) 
+vn=angle(v) 
+J1=zeros(n,n); 
+J2=zeros(n,n); 
+J3=zeros(n,n); 
+J4=zeros(n,n); 
+i=2 % bus 1 is taken as slack bus. 
+while i<=n 
+J2(i,i)=J2(i,i)+2*v(i)*y(i,i)*cos(yn(i,i)) 
+J4(i,i)=J4(i,i)-2*v(i)*y(i,i)*sin(yn(i,i)) 
+for j=1:n 
+if i==j 
+continue;
+else
+J1(i,i)=J1(i,i)+v(i)*v(j)*y(i,j)*sin(yn(i,j)-vn(i)+vn(j)) 
+J1(i,j)=-1*v(i)*v(j)*y(i,j)*sin(yn(i,j)-vn(i)+vn(j))
+J2(i,i)=J2(i,i)+v(j)*y(i,j)*cos(yn(i,j)-vn(i)+vn(j)) 
+ J2(i,j)=v(j)*y(i,j)*cos(yn(i,j)-vn(i)+vn(j)) 
+ J3(i,i)=J3(i,i)+v(i)*v(j)*y(i,j)*cos(yn(i,j)-vn(i)+vn(j)) 
+ J3(i,j)=-1*v(i)*v(j)*y(i,j)*cos(yn(i,j)-vn(i)+vn(j)) 
+ J4(i,i)=J4(i,i)-v(j)*y(i,j)*sin(yn(i,j)-vn(i)+vn(j)) 
+ J4(i,j)=-1*v(i)*y(i,j)*sin(yn(i,j)-vn(i)+vn(j)) 
+ end 
+ end 
+ 
+ i=i+1 
+end 
+J11=J1(2:n,2:n) 
+J22=J2(2:n,2:n) 
+J33=J3(2:n,2:n) 
+J44=J4(2:n,2:n) 
+Jacobian=[J11 J22;J33 J44]; 
+nl=n-1+n-1 
+for i=1:nl 
+for k=1:nl
+ fprintf('%7.2f\t\t',Jacobian(i,k)) 
+ end 
+ fprintf('\n') 
+end
+
+EXP-8
+clc
+clear
+p=48
+pf=0.8
+vt=34.64
+xd=13.5
+xq=9.333
+vt_ph=vt*1000/sqrt(3);
+pf_a=acos(pf);
+q=p*tan(pf_a)
+i=(p-j*q)*1000000/(3*vt_ph);
+delta=0:1:180;
+delta_rad=delta*(pi/180);
+if xd==xq
+    ef=vt_ph+(j*ixq);
+    efmag=abs(ef);
+    reg=((efmag-abs(vt_ph))/abs(vt_ph))*100
+    power_non=3*efmag*vt_ph*sin(delta_rad)/xd;
+    plot(delta,power_non);
+    xlabel('delta(deg)');
+    ylabel('3phase power(MW)');
+       title('plot of power angle curve for non_salientpole');
+    legend('non salient power');
+end
+if xd~=xq
+    del=atan((xq*abs(i)*pf)/(vt_ph+xq*abs(i)*sin(pf_a)))
+    theta=del+pf_a;
+    id_mag=abs(i)*sin(theta);
+    ef_mag=vt_ph*cos(del)+id_mag*xd
+    reg=((ef_mag-abs(vt_ph))/abs(vt_ph))*100
+    real_p=((ef_mag*vt_ph*sin(delta_rad)/xd)*3)/10^6;
+    reluct_p=(vt_ph^2*(xd-xq)*sin(2*delta_rad)/(2*xd*xq))*3/10^6;
+    power_salient=real_p+reluct_p;
+    plot(delta,power_salient);
+    hold on
+    plot(delta,reluct_p,'r');
+    hold on
+    plot(delta,real_p,'g');
+    xlabel('delta');
+    ylabel('3 phase power');
+    title('plot of power angle curve for salient pole');
+    legend('salient power','reluct power','real power');
+end
+grid;
+
+EXP-9
+clc
+clear
+p=0.9
+e1=1.1
+e2=1.0
+m=0.016
+x0=0.45
+x1=1.25
+x2=0.55
+tfc=0.3
+pmo=(e1*e2)/x0
+pm1=(e1*e2)/x1;
+pm2=(e1*e2)/x2
+w=0
+t=0
+d=asin(p/pmo)
+do=d
+for i=1:20
+  
+dg(i)=d*180/pi
+    if(t<tfc)
+        pm=pm1;
+    elseif(t>=tfc)
+        pm=pm2
+    end
+    k1(i)=w*0.05
+    l1(i)=(p-pm*sin(d))*0.05/m
+    k2(i)=(w+0.5*l1(i))*0.05;
+    l2(i)=(p-pm*sin(d+0.5*k1(i)))*0.05/m
+    k3(i)=(w+0.5*l2(i))*0.5
+    l3(i)=(p-pm*sin(d+0.5*k2(i)))*0.05/m
+    k4(i)=(w+l3(i))*0.5
+    l4(i)=(p-pm*sin(d+k3(i)))*0.05/m
+    deld=(k1(i)+2*k2(i)+2*k3(i)+k4(i))/6
+    delw=(l1(i)+2*l2(i)+2*l3(i)+l4(i))/6
+    d=d+deld
+    w=w+delw
+    t=t+0.05
+end
+t=0.00:0.05:0.95
+plot(t,dg)
+grid
+xlabel('time in sec')
+ylabel('torque angle delta in degrees')
+title('plot of swing curve')
+dmax=pi-asin(p/pm2)
+cosdcr=(p*(dmax-do)-pm1*cos(do)+pm2*cos(dmax))/(pm2-pm1)
+dcr=acos(cosdcr)*180/pi
+
+
+
+
+
+
+
+
+
